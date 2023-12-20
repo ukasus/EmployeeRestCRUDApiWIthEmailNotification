@@ -1,12 +1,11 @@
-FROM bellsoft/liberica-runtime-container:jdk-17-stream-musl as builder
-WORKDIR /home/myapp
-COPY . .
-RUN cd employeeCrud && ./mvnw package
-FROM bellsoft/alpaquita-linux-base:stream-musl-230404
-RUN addgroup -S spring && adduser -S spring -G spring
-USER spring:spring
-VOLUME /tmp
-WORKDIR /home/myapp
-COPY --from=builder /home/myapp/employeeCrud/target .
-EXPOSE 8080
-CMD ["java", "-jar", "employeeCrud-0.0.1-SNAPSHOT.jar"]
+FROM eclipse-temurin:17-jdk-focal
+
+WORKDIR /app
+
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
+RUN ./mvnw dependency:go-offline
+
+COPY src ./src
+
+CMD ["./mvnw", "spring-boot:run"]
