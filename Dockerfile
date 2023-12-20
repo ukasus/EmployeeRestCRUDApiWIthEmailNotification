@@ -1,19 +1,12 @@
-# Use the official OpenJDK image as a base
-FROM maven:3.8.1-openjdk-11 AS build
-WORKDIR /app
-COPY . .
-RUN mvn clean install -DskipTests
-
-FROM adoptopenjdk/openjdk11:alpine-jre
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy the JAR file built by Maven into the container
-COPY --from=build /app/target/employeeCrud.jar /app/app.jar
-
-# Expose the port the app runs on
+FROM bellsoft/liberica-runtime-container:jdk-17-stream-musl as builder
+WORKDIR /home/myapp
+ADD employeeCrud /home/myapp/employeeCrud
+RUN cd employeeCrud && ./mvnw package
+FROM bellsoft/alpaquita-linux-base:stream-musl-230404
+RUN addgroup -S spring && adduser -S spring -G spring
+USER spring:spring
+VOLUME /tmp
+WORKDIR /home/myapp
+COPY --from=builder /home/myapp/employeeCrud/target .
 EXPOSE 8080
-
-# Command to run the application
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "employeeCrud-0.0.1-SNAPSHOT.jar"]
