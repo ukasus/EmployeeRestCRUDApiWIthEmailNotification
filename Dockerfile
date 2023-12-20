@@ -1,6 +1,6 @@
 FROM bellsoft/liberica-runtime-container:jdk-17-stream-musl as builder
 WORKDIR /home/myapp
-ADD employeeCrud /home/myapp/employeeCrud
+COPY . .
 RUN cd employeeCrud && ./mvnw package
 FROM bellsoft/alpaquita-linux-base:stream-musl-230404
 RUN addgroup -S spring && adduser -S spring -G spring
