@@ -5,7 +5,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Stage 2: Create a lightweight container with the JAR file
-FROM adoptopenjdk:17-jdk
+FROM adoptopenjdk/openjdk17:alpine-jre
 WORKDIR /app
 COPY --from=build /app/target/employeeCrud.jar /app/app.jar
 EXPOSE 8080
