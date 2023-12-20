@@ -1,19 +1,12 @@
-# Use the official OpenJDK image as a base
-FROM maven:3.8.1-openjdk-11 AS build
+# Stage 1: Build the application with Maven
+FROM maven:3.8.3-openjdk-17 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-FROM adoptopenjdk/openjdk11:alpine-jre
-
-# Set the working directory inside the container
+# Stage 2: Create a lightweight container with the JAR file
+FROM adoptopenjdk:17-jdk
 WORKDIR /app
-
-# Copy the JAR file built by Maven into the container
 COPY --from=build /app/target/employeeCrud.jar /app/app.jar
-
-# Expose the port the app runs on
 EXPOSE 8080
-
-# Command to run the application
 CMD ["java", "-jar", "app.jar"]
