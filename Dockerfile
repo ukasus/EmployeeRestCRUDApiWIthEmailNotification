@@ -2,7 +2,7 @@
 FROM maven:3.8.1-openjdk-11 AS build
 WORKDIR /app
 COPY . .
-RUN mvn clean package -DskipTests
+RUN mvn clean install -DskipTests
 
 FROM adoptopenjdk/openjdk11:alpine-jre
 
